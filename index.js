@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 
 app.get("/", (req, res) => {
-  res.send({ message: "Hello World!" });
+  res.send({ message: "Nalongo Dashboard Server is running fine !" });
 });
 
 app.use("/api/v1/users", userRouter);
