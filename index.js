@@ -4,7 +4,8 @@ import cors from "cors";
 
 import connectDB from "./mongodb/connect.js";
 import userRouter from "./routes/user.routes.js";
-import propertyRouter from "./routes/property.routes.js";
+import childRouter from "./routes/child.routes.js";
+import leaderRouter from "./routes/leader.route.js";
 
 dotenv.config();
 
@@ -17,7 +18,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/properties", propertyRouter);
+app.use("/api/v1/children", childRouter);
+app.use("/api/v1/leaders", leaderRouter);
 
 const startServer = async () => {
   try {
