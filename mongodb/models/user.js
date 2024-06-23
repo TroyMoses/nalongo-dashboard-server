@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true },
   avatar: { type: String, required: true },
   allChildren: [{ type: mongoose.Schema.Types.ObjectId, ref: "Child" }],
+  allLeaders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Leader" }],
 });
 
 const userModel = mongoose.model("User", UserSchema);

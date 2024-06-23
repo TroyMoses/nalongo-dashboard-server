@@ -65,7 +65,7 @@ const getLeaderDetail = async (req, res) => {
 
 const createLeader = async (req, res) => {
   try {
-    const { name, description, leaderShipType, position, donations, photo, email } =
+    const { name, description, leaderShipType, donations, position, photo, email } =
       req.body;
 
     const session = await mongoose.startSession();
@@ -81,8 +81,8 @@ const createLeader = async (req, res) => {
       name,
       description,
       leaderShipType,
-      position,
       donations,
+      position,
       photo: photoUrl.url,
       creator: user._id,
     });
@@ -101,7 +101,7 @@ const createLeader = async (req, res) => {
 const updateLeader = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, leaderShipType, position, donations, photo } =
+    const { name, description, leaderShipType, donations, position, photo } =
       req.body;
 
     const photoUrl = await cloudinary.uploader.upload(photo);
@@ -112,8 +112,8 @@ const updateLeader = async (req, res) => {
         name,
         description,
         leaderShipType,
-        position,
         donations,
+        position,
         photo: photoUrl.url || photo,
       }
     );
