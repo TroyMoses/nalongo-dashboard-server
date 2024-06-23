@@ -5,7 +5,10 @@ import cors from "cors";
 import connectDB from "./mongodb/connect.js";
 import userRouter from "./routes/user.routes.js";
 import childRouter from "./routes/child.routes.js";
-import leaderRouter from "./routes/leader.route.js";
+import leaderRouter from "./routes/leader.routes.js";
+import chapterSwitzerlandRouter from "./routes/chapter-switzerland.routes.js";
+import chapterGermanyRouter from "./routes/chapter-Germany.routes.js";
+import chapterDenmarkRouter from "./routes/chapter-denmark.routes.js";
 
 dotenv.config();
 
@@ -20,6 +23,9 @@ app.get("/", (req, res) => {
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/children", childRouter);
 app.use("/api/v1/leaders", leaderRouter);
+app.use("/api/v1/chapter-switzerland", chapterSwitzerlandRouter);
+app.use("/api/v1/chapter-germany", chapterGermanyRouter);
+app.use("/api/v1/chapter-denmark", chapterDenmarkRouter);
 
 const startServer = async () => {
   try {
