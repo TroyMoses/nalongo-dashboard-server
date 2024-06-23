@@ -7,7 +7,7 @@ import userRouter from "./routes/user.routes.js";
 import childRouter from "./routes/child.routes.js";
 import leaderRouter from "./routes/leader.routes.js";
 import chapterSwitzerlandRouter from "./routes/chapter-switzerland.routes.js";
-import chapterGermanyRouter from "./routes/chapter-Germany.routes.js";
+import chapterGermanyRouter from "./routes/chapter-germany.routes.js";
 import chapterDenmarkRouter from "./routes/chapter-denmark.routes.js";
 
 dotenv.config();
