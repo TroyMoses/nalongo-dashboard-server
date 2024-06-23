@@ -1,4 +1,4 @@
-import Property from "../mongodb/models/property.js";
+import Child from "../mongodb/models/child.js";
 import User from "../mongodb/models/user.js";
 
 import mongoose from "mongoose";
@@ -13,30 +13,30 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const getAllProperties = async (req, res) => {
+const getAllChildren = async (req, res) => {
   const {
     _end,
     _order,
     _start,
     _sort,
-    title_like = "",
-    propertyType = "",
+    name_like = "",
+    levelOfNeed = "",
   } = req.query;
 
   const query = {};
 
-  if (propertyType !== "") {
-    query.propertyType = propertyType;
+  if (levelOfNeed !== "") {
+    query.levelOfNeed = levelOfNeed;
   }
 
-  if (title_like) {
-    query.title = { $regex: title_like, $options: "i" };
+  if (name_like) {
+    query.name = { $regex: name_like, $options: "i" };
   }
 
   try {
-    const count = await Property.countDocuments({ query });
+    const count = await Child.countDocuments({ query });
 
-    const properties = await Property.find(query)
+    const children = await Child.find(query)
       .limit(_end)
       .skip(_start)
       .sort({ [_sort]: _order });
@@ -44,28 +44,28 @@ const getAllProperties = async (req, res) => {
     res.header("x-total-count", count);
     res.header("Access-Control-Expose-Headers", "x-total-count");
 
-    res.status(200).json(properties);
+    res.status(200).json(children);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const getPropertyDetail = async (req, res) => {
+const getChildDetail = async (req, res) => {
   const { id } = req.params;
-  const propertyExists = await Property.findOne({ _id: id }).populate(
+  const childExists = await Child.findOne({ _id: id }).populate(
     "creator",
   );
 
-  if (propertyExists) {
-    res.status(200).json(propertyExists);
+  if (childExists) {
+    res.status(200).json(childExists);
   } else {
-    res.status(404).json({ message: "Property not found" });
+    res.status(404).json({ message: "Child not found" });
   }
 };
 
-const createProperty = async (req, res) => {
+const createChild = async (req, res) => {
   try {
-    const { title, description, propertyType, location, price, photo, email } =
+    const { name, description, levelOfNeed, grade, donations, photo, email } =
       req.body;
 
     const session = await mongoose.startSession();
@@ -77,82 +77,82 @@ const createProperty = async (req, res) => {
 
     const photoUrl = await cloudinary.uploader.upload(photo);
 
-    const newProperty = await Property.create({
-      title,
+    const newChild = await Child.create({
+      name,
       description,
-      propertyType,
-      location,
-      price,
+      levelOfNeed,
+      grade,
+      donations,
       photo: photoUrl.url,
       creator: user._id,
     });
 
-    user.allProperties.push(newProperty._id);
+    user.allChildren.push(newChild._id);
     await user.save({ session });
 
     await session.commitTransaction();
 
-    res.status(200).json({ message: "Property created successfully" });
+    res.status(200).json({ message: "Child created successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const updateProperty = async (req, res) => {
+const updateChild = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, propertyType, location, price, photo } =
+    const { name, description, levelOfNeed, grade, donations, photo } =
       req.body;
 
     const photoUrl = await cloudinary.uploader.upload(photo);
 
-    await Property.findByIdAndUpdate(
+    await Child.findByIdAndUpdate(
       { _id: id },
       {
-        title,
+        name,
         description,
-        propertyType,
-        location,
-        price,
+        levelOfNeed,
+        grade,
+        donations,
         photo: photoUrl.url || photo,
       },
     );
 
-    res.status(200).json({ message: "Property updated successfully" });
+    res.status(200).json({ message: "Child updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const deleteProperty = async (req, res) => {
+const deleteChild = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const propertyToDelete = await Property.findById({ _id: id }).populate(
+    const childToDelete = await Child.findById({ _id: id }).populate(
       "creator",
     );
 
-    if (!propertyToDelete) throw new Error("Property not found");
+    if (!childToDelete) throw new Error("Child not found");
 
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    propertyToDelete.remove({ session });
-    propertyToDelete.creator.allProperties.pull(propertyToDelete);
+    childToDelete.remove({ session });
+    childToDelete.creator.allChildren.pull(childToDelete);
 
-    await propertyToDelete.creator.save({ session });
+    await childToDelete.creator.save({ session });
     await session.commitTransaction();
 
-    res.status(200).json({ message: "Property deleted successfully" });
+    res.status(200).json({ message: "Child deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 export {
-  getAllProperties,
-  getPropertyDetail,
-  createProperty,
-  updateProperty,
-  deleteProperty,
+  getAllChildren,
+  getChildDetail,
+  createChild,
+  updateChild,
+  deleteChild,
 };
