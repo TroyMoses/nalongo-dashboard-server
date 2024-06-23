@@ -1,4 +1,4 @@
-import Leader from "../mongodb/models/leader.js";
+import ChapterGermany from "../mongodb/models/chapter-germany.js";
 import User from "../mongodb/models/user.js";
 
 import mongoose from "mongoose";
@@ -13,30 +13,25 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const getAllLeaders = async (req, res) => {
+const getAllChapterGermany = async (req, res) => {
   const {
     _end,
     _order,
     _start,
     _sort,
     name_like = "",
-    leaderShipType = "",
   } = req.query;
 
   const query = {};
-
-  if (leaderShipType !== "") {
-    query.leaderShipType = leaderShipType;
-  }
 
   if (name_like) {
     query.name = { $regex: name_like, $options: "i" };
   }
 
   try {
-    const count = await Leader.countDocuments({ query });
+    const count = await ChapterGermany.countDocuments({ query });
 
-    const leaders = await Leader.find(query)
+    const chapterGermany = await ChapterGermany.find(query)
       .limit(_end)
       .skip(_start)
       .sort({ [_sort]: _order });
@@ -44,28 +39,28 @@ const getAllLeaders = async (req, res) => {
     res.header("x-total-count", count);
     res.header("Access-Control-Expose-Headers", "x-total-count");
 
-    res.status(200).json(leaders);
+    res.status(200).json(chapterGermany);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const getLeaderDetail = async (req, res) => {
+const getChapterGermanyDetail = async (req, res) => {
   const { id } = req.params;
-  const leaderExists = await Leader.findOne({ _id: id }).populate(
+  const chapterGermanyExists = await ChapterGermany.findOne({ _id: id }).populate(
     "creator"
   );
 
-  if (leaderExists) {
-    res.status(200).json(leaderExists);
+  if (chapterGermanyExists) {
+    res.status(200).json(chapterGermanyExists);
   } else {
-    res.status(404).json({ message: "Leader not found" });
+    res.status(404).json({ message: "Chapter Germany not found" });
   }
 };
 
-const createLeader = async (req, res) => {
+const createChapterGermany = async (req, res) => {
   try {
-    const { name, description, leaderShipType, donations, position, photo, email } =
+    const { name, description, photo, email } =
       req.body;
 
     const session = await mongoose.startSession();
@@ -77,82 +72,76 @@ const createLeader = async (req, res) => {
 
     const photoUrl = await cloudinary.uploader.upload(photo);
 
-    const newLeader = await Leader.create({
+    const newChapterGermany = await ChapterGermany.create({
       name,
       description,
-      leaderShipType,
-      donations,
-      position,
       photo: photoUrl.url,
       creator: user._id,
     });
 
-    user.allLeaders.push(newLeader._id);
+    user.allChapterGermany.push(newChapterGermany._id);
     await user.save({ session });
 
     await session.commitTransaction();
 
-    res.status(200).json({ message: "Leader created successfully" });
+    res.status(200).json({ message: "Chapter Germany created successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const updateLeader = async (req, res) => {
+const updateChapterGermany = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, leaderShipType, donations, position, photo } =
+    const { name, description, photo } =
       req.body;
 
     const photoUrl = await cloudinary.uploader.upload(photo);
 
-    await Leader.findByIdAndUpdate(
+    await ChapterGermany.findByIdAndUpdate(
       { _id: id },
       {
         name,
         description,
-        leaderShipType,
-        donations,
-        position,
         photo: photoUrl.url || photo,
       }
     );
 
-    res.status(200).json({ message: "Leader updated successfully" });
+    res.status(200).json({ message: "Chapter Germany updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const deleteLeader = async (req, res) => {
+const deleteChapterGermany = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const leaderToDelete = await Leader.findById({ _id: id }).populate(
+    const chapterGermanyToDelete = await ChapterGermany.findById({ _id: id }).populate(
       "creator"
     );
 
-    if (!leaderToDelete) throw new Error("Leader not found");
+    if (!chapterGermanyToDelete) throw new Error("Chapter Germany not found");
 
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    leaderToDelete.remove({ session });
-    leaderToDelete.creator.allLeaders.pull(leaderToDelete);
+    chapterGermanyToDelete.remove({ session });
+    chapterGermanyToDelete.creator.allChapterGermany.pull(chapterGermanyToDelete);
 
-    await leaderToDelete.creator.save({ session });
+    await chapterGermanyToDelete.creator.save({ session });
     await session.commitTransaction();
 
-    res.status(200).json({ message: "Leader deleted successfully" });
+    res.status(200).json({ message: "Chapter Germany deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 export {
-  getAllLeaders,
-  getLeaderDetail,
-  createLeader,
-  updateLeader,
-  deleteLeader,
+  getAllChapterGermany,
+  getChapterGermanyDetail,
+  createChapterGermany,
+  updateChapterGermany,
+  deleteChapterGermany,
 };
