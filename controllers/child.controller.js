@@ -40,7 +40,7 @@ const getAllChildren = async (req, res) => {
   }
 
   if (childId_like) {
-    query.id = { $regex: childId_like, $options: "i" };
+    query.childId = { $regex: childId_like, $options: "i" };
   }
 
   try {
