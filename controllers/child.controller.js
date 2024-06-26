@@ -21,6 +21,8 @@ const getAllChildren = async (req, res) => {
     _sort,
     name_like = "",
     levelOfNeed = "",
+    childId_like = "",
+    gender = "",
   } = req.query;
 
   const query = {};
@@ -29,8 +31,16 @@ const getAllChildren = async (req, res) => {
     query.levelOfNeed = levelOfNeed;
   }
 
+  if (gender !== "") {
+    query.gender = gender;
+  }
+
   if (name_like) {
     query.name = { $regex: name_like, $options: "i" };
+  }
+
+  if (childId_like) {
+    query.id = { $regex: childId_like, $options: "i" };
   }
 
   try {
@@ -65,7 +75,7 @@ const getChildDetail = async (req, res) => {
 
 const createChild = async (req, res) => {
   try {
-    const { name, description, levelOfNeed, grade, donations, photo, email } =
+    const { name, age, childId, gender, description, levelOfNeed, grade, donations, photo, email } =
       req.body;
 
     const session = await mongoose.startSession();
@@ -79,6 +89,9 @@ const createChild = async (req, res) => {
 
     const newChild = await Child.create({
       name,
+      age,
+      childId,
+      gender,
       description,
       levelOfNeed,
       grade,
@@ -101,7 +114,7 @@ const createChild = async (req, res) => {
 const updateChild = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, levelOfNeed, grade, donations, photo } =
+    const { name, age, childId, gender, description, levelOfNeed, grade, donations, photo } =
       req.body;
 
     const photoUrl = await cloudinary.uploader.upload(photo);
@@ -110,6 +123,9 @@ const updateChild = async (req, res) => {
       { _id: id },
       {
         name,
+        age,
+        childId,
+        gender,
         description,
         levelOfNeed,
         grade,
