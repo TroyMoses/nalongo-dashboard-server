@@ -7,8 +7,11 @@ const ChildSchema = new mongoose.Schema({
   gender: { type: String, required: true },
   description: { type: String, required: true },
   levelOfNeed: { type: String, required: true },
+  nationality: { type: String, required: true },
+  parentStatus: { type: String, required: true },
   grade: { type: String, required: true },
   donations: { type: Number, required: true },
+  yearsLeftToGraduate: { type: Number, required: true },
   photo: { type: String, required: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
