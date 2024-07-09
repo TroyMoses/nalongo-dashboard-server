@@ -75,7 +75,7 @@ const getChildDetail = async (req, res) => {
 
 const createChild = async (req, res) => {
   try {
-    const { name, age, childId, gender, description, levelOfNeed, grade, donations, photo, email } =
+    const { name, age, childId, gender, description, levelOfNeed, nationality, parentStatus, grade, donations, yearsLeftToGraduate, photo, email } =
       req.body;
 
     const session = await mongoose.startSession();
@@ -93,9 +93,12 @@ const createChild = async (req, res) => {
       childId,
       gender,
       description,
+      nationality,
+      parentStatus,
       levelOfNeed,
       grade,
       donations,
+      yearsLeftToGraduate,
       photo: photoUrl.url,
       creator: user._id,
     });
@@ -114,7 +117,7 @@ const createChild = async (req, res) => {
 const updateChild = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, age, childId, gender, description, levelOfNeed, grade, donations, photo } =
+    const { name, age, childId, gender, description, levelOfNeed, nationality, parentStatus, grade, donations, yearsLeftToGraduate, photo } =
       req.body;
 
     const photoUrl = await cloudinary.uploader.upload(photo);
@@ -128,8 +131,11 @@ const updateChild = async (req, res) => {
         gender,
         description,
         levelOfNeed,
+        nationality,
+        parentStatus,
         grade,
         donations,
+        yearsLeftToGraduate,
         photo: photoUrl.url || photo,
       },
     );
